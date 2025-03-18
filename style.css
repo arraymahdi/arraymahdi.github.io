@@ -1,0 +1,231 @@
+/* Import a sophisticated font */
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Roboto:wght@300;400&display=swap');
+
+/* Global styles */
+body {
+  background: linear-gradient(135deg, #1a0033 0%, #0d1a66 50%, #000033 100%);
+  color: #e6e6e6;
+  font-family: 'Roboto', sans-serif;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  margin: 0;
+  overflow-y: auto;
+  position: relative;
+}
+
+/* Cosmic background with subtle stars */
+body::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1000"><circle cx="100" cy="100" r="2" fill="rgba(255,255,255,0.5)"/><circle cx="800" cy="200" r="1" fill="rgba(255,255,255,0.3)"/><circle cx="500" cy="700" r="3" fill="rgba(255,255,255,0.4)"/><circle cx="300" cy="400" r="2" fill="rgba(255,255,255,0.6)"/></svg>');
+  opacity: 0.2;
+  z-index: -1;
+  animation: twinkle 10s infinite;
+}
+
+@keyframes twinkle {
+  0%, 100% { opacity: 0.2; }
+  50% { opacity: 0.4; }
+}
+
+/* Login Section */
+#login-section {
+  background: rgba(10, 10, 51, 0.9);
+  padding: 30px;
+  border: 1px solid #b388ff;
+  box-shadow: 0 0 20px rgba(179, 136, 255, 0.5);
+  border-radius: 15px;
+  width: 320px;
+  transition: transform 0.3s ease, opacity 0.5s ease;
+}
+
+#login-section:hover {
+  transform: scale(1.02);
+}
+
+#login-section h2 {
+  text-align: center;
+  color: #b388ff;
+  font-family: 'Cinzel', serif;
+  font-size: 24px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  margin-bottom: 20px;
+}
+
+/* Subtle glow effect for headings */
+h2 {
+  position: relative;
+  text-shadow: 0 0 10px rgba(179, 136, 255, 0.7);
+}
+
+/* Form styling */
+#login-form label {
+  display: block;
+  margin-top: 15px;
+  color: #e6e6e6;
+  font-size: 14px;
+}
+
+#login-form input {
+  width: 100%;
+  padding: 10px;
+  margin-top: 5px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid #8e24aa;
+  border-radius: 5px;
+  color: #fff;
+  font-family: 'Roboto', sans-serif;
+  box-shadow: inset 0 0 5px rgba(142, 36, 170, 0.3);
+  box-sizing: border-box;
+  transition: border-color 0.3s;
+}
+
+#login-form input:focus {
+  border-color: #b388ff;
+  outline: none;
+}
+
+#login-form button {
+  width: 100%;
+  padding: 12px;
+  margin-top: 25px;
+  background: linear-gradient(45deg, #8e24aa, #b388ff);
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  font-family: 'Cinzel', serif;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background 0.3s, box-shadow 0.3s;
+}
+
+#login-form button:hover {
+  background: linear-gradient(45deg, #b388ff, #8e24aa);
+  box-shadow: 0 0 15px rgba(179, 136, 255, 0.7);
+}
+
+#error-message {
+  text-align: center;
+  margin-top: 15px;
+  color: #ff8a80;
+  font-size: 14px;
+}
+
+/* Profile Section */
+#profile-section {
+  background: rgba(10, 10, 51, 0.9);
+  padding: 30px;
+  border: 1px solid #b388ff;
+  box-shadow: 0 0 20px rgba(179, 136, 255, 0.5);
+  border-radius: 15px;
+  width: 85%;
+  max-width: 900px;
+  transition: opacity 0.5s ease;
+  min-height: 80vh;
+  overflow-y: auto;
+  margin-top: 30px;
+}
+
+#profile-section h2 {
+  margin-bottom: 25px;
+}
+
+#logout-button {
+  background: linear-gradient(45deg, #d81b60, #f06292);
+  color: #fff;
+  border: none;
+  padding: 12px 25px;
+  font-family: 'Cinzel', serif;
+  text-transform: uppercase;
+  cursor: pointer;
+  float: right;
+  border-radius: 5px;
+  transition: background 0.3s, box-shadow 0.3s;
+}
+
+#logout-button:hover {
+  background: linear-gradient(45deg, #f06292, #d81b60);
+  box-shadow: 0 0 15px rgba(240, 98, 146, 0.7);
+}
+
+#user-info p {
+  margin: 15px 0;
+  padding: 12px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid #8e24aa;
+  border-radius: 5px;
+  box-shadow: 0 0 5px rgba(142, 36, 170, 0.3);
+}
+
+/* Graphs Section */
+#graphs {
+  margin-top: 30px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+#graphs h3 {
+  text-align: center;
+  color: #b388ff;
+  font-family: 'Cinzel', serif;
+  font-size: 18px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 15px;
+  text-shadow: 0 0 10px rgba(179, 136, 255, 0.5);
+}
+
+/* Graph styling */
+.graph-line {
+  stroke: #b388ff;
+  stroke-width: 2;
+  filter: drop-shadow(0 0 5px rgba(179, 136, 255, 0.7));
+}
+
+.graph-axis {
+  stroke: #e6e6e6;
+  stroke-width: 1;
+  opacity: 0.6;
+}
+
+.graph-bar {
+  fill: #8e24aa;
+  filter: drop-shadow(0 0 5px rgba(229, 223, 231, 0.7));
+}
+
+.graph-label {
+  fill: #e6e6e6;
+  font-family: 'Roboto', sans-serif;
+  font-size: 12px;
+  text-shadow: 0 0 3px rgba(179, 136, 255, 0.5);
+}
+
+/* Hide sections when not displayed */
+.hidden {
+  opacity: 0;
+  display: none;
+}
+
+/* Responsive design */
+@media (max-width: 600px) {
+  #login-section,
+  #profile-section {
+    width: 90%;
+  }
+  #xp-over-time,
+  #xp-per-project {
+    display: block;
+    margin: 0 auto;
+    width: 100%;
+    max-width: 500px;
+    height: 300px;
+  }
+}
