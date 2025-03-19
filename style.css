@@ -164,15 +164,17 @@ body::before {
 }
 
 /* Improved Graph Styling */
-.graph-line {
-  stroke: #00ffff;
-  stroke-width: 2.5;
-  filter: drop-shadow(0 0 6px rgba(0, 255, 255, 0.6));
+.grid line {
+  stroke: rgba(230, 230, 230, 0.2);
+  stroke-width: 1;
 }
 
 .graph-bar {
-  fill: #8e24aa;
-  transition: transform 0.2s ease;
+  transition: transform 0.2s ease; /* Only scale, no height or crazy shaking */
+}
+
+.graph-line {
+  transition: stroke-dashoffset 1s ease; /* Keep line animation */
 }
 
 .graph-bar:hover {
