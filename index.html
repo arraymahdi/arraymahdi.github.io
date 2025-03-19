@@ -3,40 +3,47 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Student Progress Dashboard</title>
+  <title>Progress Dashboard</title>
   <script src="https://d3js.org/d3.v7.min.js"></script>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <div id="login-section">
-    <h2>Login</h2>
+    <h2 class="section-title">Login Portal</h2>
     <form id="login-form">
-      <label for="usernameOrEmail">Username or Email:</label>
+      <label for="usernameOrEmail">Username:</label>
       <input type="text" id="usernameOrEmail" required>
       <label for="password">Password:</label>
       <input type="password" id="password" required>
-      <button type="submit">Login</button>
+      <button type="submit">Sign In</button>
     </form>
-    <p id="error-message" style="display: none;">Invalid credentials</p>
+    <p id="error-message" style="display: none;">Access Denied</p>
   </div>
 
   <div id="profile-section" style="display: none;">
-    <h2>Student Profile</h2>
-    <button id="logout-button">Logout</button>
+    <h2 class="section-title">User Dashboard</h2>
+    <button id="logout-button">Sign Out</button>
     <div id="user-info">
-      <p><strong>ID:</strong> <span id="user-id"></span></p>
+      <p><strong>User ID:</strong> <span id="user-id"></span></p>
       <p><strong>Username:</strong> <span id="username"></span></p>
       <p><strong>Email:</strong> <span id="email"></span></p>
       <p><strong>Total XP:</strong> <span id="total-xp"></span></p>
+      <p><strong>Audits Assigned:</strong> <span id="audits-assigned"></span></p>
+      <p><strong>Records:</strong> <span id="records-count"></span></p>
+      <div id="attributes"></div>
     </div>
     <div id="graphs">
       <div class="graph-container">
-        <h3>XP Over Time</h3>
-        <svg id="xp-over-time" width="600" height="400"></svg>
+        <h3 class="graph-title">XP Timeline</h3>
+        <svg id="xp-over-time" width="700" height="450"></svg>
       </div>
       <div class="graph-container">
-        <h3>XP Per Month</h3>
-        <svg id="xp-per-month" width="600" height="400"></svg>
+        <h3 class="graph-title">Monthly XP</h3>
+        <svg id="xp-per-month" height="500"></svg>
+      </div>
+      <div class="graph-container">
+        <h3 class="graph-title">Audit Ratio</h3>
+        <svg id="audit-ratio" width="700" height="450"></svg>
       </div>
     </div>
   </div>
