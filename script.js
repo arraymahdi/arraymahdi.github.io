@@ -151,31 +151,47 @@ function renderXpOverTime(transactions) {
   }
 
   let cumulativeXP = 0;
-  const data = transactions.map(t => ({ date: new Date(t.createdAt), xp: (cumulativeXP += t.amount) }));
-  const xScale = d3.scaleTime().domain(d3.extent(data, d => d.date)).range([padding, width - padding]);
-  const yScale = d3.scaleLinear().domain([0, d3.max(data, d => d.xp) * 1.1]).range([height - padding, padding]);
+  const sortedTransactions = transactions
+    .map(t => ({ date: new Date(t.createdAt), xp: (cumulativeXP += t.amount) }))
+    .sort((a, b) => a.date - b.date);
+
+  const xScale = d3.scaleTime()
+    .domain(d3.extent(sortedTransactions, d => d.date))
+    .range([padding, width - padding]);
+
+  const yMax = d3.max(sortedTransactions, d => d.xp) || 1;
+  const yScale = d3.scaleLinear()
+    .domain([0, yMax * 1.1])
+    .range([height - padding, padding]);
 
   svg.append('path')
-    .datum(data)
+    .datum(sortedTransactions)
     .attr('class', 'graph-line')
-    .attr('d', d3.line().x(d => xScale(d.date)).y(d => yScale(d.xp)).curve(d3.curveMonotoneX));
+    .attr('d', d3.line()
+      .x(d => xScale(d.date))
+      .y(d => yScale(d.xp))
+      .curve(d3.curveLinear)
+    );
 
   svg.selectAll('.graph-point')
-    .data(data)
+    .data(sortedTransactions)
     .enter()
     .append('circle')
     .attr('class', 'graph-point')
     .attr('cx', d => xScale(d.date))
     .attr('cy', d => yScale(d.xp))
     .attr('r', 5)
-    .on('mouseover', function(event, d) {
+    .on('mouseover', function (event, d) {
       const tooltip = document.createElement('div');
       tooltip.className = 'tooltip';
       tooltip.textContent = `${d.date.toLocaleDateString()}: ${d.xp.toLocaleString()} XP`;
       document.body.appendChild(tooltip);
-      const rect = this.getBoundingClientRect();
-      tooltip.style.left = `${rect.left + window.scrollX + rect.width / 2}px`;
-      tooltip.style.top = `${rect.top + window.scrollY - tooltip.offsetHeight - 10}px`;
+
+      setTimeout(() => {
+        const rect = this.getBoundingClientRect();
+        tooltip.style.left = `${rect.left + window.scrollX + rect.width / 2}px`;
+        tooltip.style.top = `${rect.top + window.scrollY - tooltip.offsetHeight - 10}px`;
+      }, 0);
     })
     .on('mouseout', () => document.querySelector('.tooltip')?.remove());
 
@@ -197,8 +213,8 @@ function renderXpPerMonth(transactions) {
   const svg = d3.select('#xp-per-month');
   svg.selectAll('*').remove();
   const visibleWidth = 700, height = 500, padding = 70;
-  const barWidth = 25; // Fixed bar width
-  const fullWidth = Math.max(transactions.length * (barWidth + 2), visibleWidth); // Tight spacing
+  const barWidth = 25;
+  const fullWidth = Math.max(transactions.length * (barWidth + 2), visibleWidth);
 
   svg.attr('width', fullWidth);
   svg.attr('viewBox', `0 0 ${fullWidth} ${height}`);
@@ -227,7 +243,7 @@ function renderXpPerMonth(transactions) {
   const xScale = d3.scaleBand()
     .domain(data.map(d => d.date.toISOString().slice(0, 7)))
     .range([padding, fullWidth - padding])
-    .padding(0.05); // Tight padding
+    .padding(0.05);
   const yScale = d3.scaleLinear()
     .domain([0, d3.max(data, d => d.xp) * 1.2])
     .range([height - padding, padding]);
@@ -242,7 +258,7 @@ function renderXpPerMonth(transactions) {
     .enter()
     .append('rect')
     .attr('class', 'graph-bar')
-    .attr('x', d => xScale(d.date.toISOString().slice(0, 7)) + (xScale.bandwidth() - barWidth) / 2) // Center bars under ticks
+    .attr('x', d => xScale(d.date.toISOString().slice(0, 7)) + (xScale.bandwidth() - barWidth) / 2)
     .attr('y', d => yScale(d.xp))
     .attr('width', barWidth)
     .attr('height', d => height - padding - yScale(d.xp))
