@@ -146,7 +146,9 @@ function renderXpOverTime(transactions) {
   const xScale = d3.scaleTime().domain(d3.extent(data, d => d.date)).range([padding, width - padding]);
   const yScale = d3.scaleLinear().domain([0, d3.max(data, d => d.xp) * 1.1]).range([height - padding, padding]);
 
-  svg.append('g')
+  // Use d3.select for DOM elements
+  d3.select(svg)
+    .append('g')
     .attr('class', 'grid')
     .attr('transform', `translate(${padding}, 0)`)
     .call(d3.axisLeft(yScale).ticks(5).tickSize(-width + 2 * padding).tickFormat(''));
@@ -161,14 +163,17 @@ function renderXpOverTime(transactions) {
     svg.appendChild(circle);
   });
 
-  svg.append('g')
+  d3.select(svg)
+    .append('g')
     .attr('class', 'graph-axis')
     .attr('transform', `translate(0, ${height - padding})`)
     .call(d3.axisBottom(xScale).ticks(10).tickFormat(d3.timeFormat('%b %Y')))
     .selectAll('text')
     .attr('transform', 'rotate(-45)')
     .attr('text-anchor', 'end');
-  svg.append('g')
+
+  d3.select(svg)
+    .append('g')
     .attr('class', 'graph-axis')
     .attr('transform', `translate(${padding}, 0)`)
     .call(d3.axisLeft(yScale).ticks(5));
@@ -181,7 +186,7 @@ function renderXpPerMonth(transactions) {
   svg.innerHTML = '';
   
   const visibleWidth = 800, height = 500, padding = 80;
-  const fullWidth = transactions.length * 60;
+  const fullWidth = Math.max(transactions.length * 60, visibleWidth); // Ensure minimum width
   
   svg.setAttribute('width', fullWidth);
   svg.setAttribute('viewBox', `0 0 ${fullWidth} ${height}`);
@@ -207,7 +212,8 @@ function renderXpPerMonth(transactions) {
     .domain([0, d3.max(data, d => d.xp) * 1.2])
     .range([height - padding, padding]);
 
-  svg.append('g')
+  d3.select(svg)
+    .append('g')
     .attr('class', 'grid')
     .attr('transform', `translate(${padding}, 0)`)
     .call(d3.axisLeft(yScale).ticks(5).tickSize(-fullWidth + 2 * padding).tickFormat(''));
@@ -228,7 +234,8 @@ function renderXpPerMonth(transactions) {
     }, 100);
   });
 
-  svg.append('g')
+  d3.select(svg)
+    .append('g')
     .attr('class', 'graph-axis')
     .attr('transform', `translate(0, ${height - padding})`)
     .call(d3.axisBottom(xScale).tickFormat(d => new Date(d).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })))
@@ -236,7 +243,9 @@ function renderXpPerMonth(transactions) {
     .attr('transform', 'rotate(-45)')
     .attr('text-anchor', 'end')
     .attr('dy', '0.5em');
-  svg.append('g')
+
+  d3.select(svg)
+    .append('g')
     .attr('class', 'graph-axis')
     .attr('transform', `translate(${padding}, 0)`)
     .call(d3.axisLeft(yScale).ticks(5));
