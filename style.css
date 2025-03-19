@@ -130,7 +130,7 @@ h2 {
   transition: opacity 0.5s ease;
   min-height: 80vh;
   overflow-y: auto;
-  margin-top: 30px;
+  margin: 30px 0;
 }
 
 #profile-section h2 {
@@ -170,6 +170,7 @@ h2 {
   display: flex;
   flex-direction: column;
   align-items: center;
+  gap: 40px; /* Space between graphs */
 }
 
 #graphs h3 {
@@ -181,67 +182,6 @@ h2 {
   letter-spacing: 1px;
   margin-bottom: 15px;
   text-shadow: 0 0 10px rgba(179, 136, 255, 0.5);
-}
-
-/* ... (Keep existing CSS unchanged up to #graphs) */
-
-#graphs {
-  margin-top: 30px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 40px; /* Add spacing between graphs */
-}
-
-.graph-point {
-  fill: #b388ff;
-  cursor: pointer;
-  transition: r 0.2s;
-}
-
-.graph-point:hover {
-  r: 6;
-}
-
-.graph-bar {
-  fill: #8e24aa;
-  filter: drop-shadow(0 0 5px rgba(229, 223, 231, 0.7));
-  cursor: pointer;
-  transition: opacity 0.2s;
-}
-
-.graph-bar:hover {
-  opacity: 0.8;
-}
-
-.tooltip {
-  position: absolute;
-  background: rgba(10, 10, 51, 0.9);
-  color: #e6e6e6;
-  padding: 5px 10px;
-  border-radius: 5px;
-  border: 1px solid #b388ff;
-  font-size: 12px;
-  pointer-events: none;
-  box-shadow: 0 0 10px rgba(179, 136, 255, 0.5);
-}
-
-/* Responsive design */
-@media (max-width: 600px) {
-  #login-section,
-  #profile-section {
-    width: 90%;
-  }
-  #xp-over-time,
-  #xp-per-year,
-  #audits-per-year,
-  #xp-per-project {
-    display: block;
-    margin: 0 auto;
-    width: 100%;
-    max-width: 500px;
-    height: 300px;
-  }
 }
 
 /* Graph styling */
@@ -260,6 +200,22 @@ h2 {
 .graph-bar {
   fill: #8e24aa;
   filter: drop-shadow(0 0 5px rgba(229, 223, 231, 0.7));
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.graph-bar:hover {
+  opacity: 0.8;
+}
+
+.graph-point {
+  fill: #b388ff;
+  cursor: pointer;
+  transition: r 0.2s;
+}
+
+.graph-point:hover {
+  r: 6;
 }
 
 .graph-label {
@@ -267,6 +223,20 @@ h2 {
   font-family: 'Roboto', sans-serif;
   font-size: 12px;
   text-shadow: 0 0 3px rgba(179, 136, 255, 0.5);
+}
+
+/* Tooltip styling */
+.tooltip {
+  position: absolute;
+  background: rgba(10, 10, 51, 0.9);
+  color: #e6e6e6;
+  padding: 5px 10px;
+  border-radius: 5px;
+  border: 1px solid #b388ff;
+  font-size: 12px;
+  pointer-events: none;
+  box-shadow: 0 0 10px rgba(179, 136, 255, 0.5);
+  z-index: 10;
 }
 
 /* Hide sections when not displayed */
@@ -282,6 +252,8 @@ h2 {
     width: 90%;
   }
   #xp-over-time,
+  #xp-per-year,
+  #audits-per-year,
   #xp-per-project {
     display: block;
     margin: 0 auto;
