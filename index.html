@@ -8,7 +8,6 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <!-- Login Section -->
   <div id="login-section">
     <h2>Login</h2>
     <form id="login-form">
@@ -21,37 +20,23 @@
     <p id="error-message" style="display: none;">Invalid credentials</p>
   </div>
 
-  <!-- Profile Section -->
   <div id="profile-section" style="display: none;">
     <h2>Student Profile</h2>
     <button id="logout-button">Logout</button>
-    <marquee>Welcome to the Reboot Student Progress Dashboard!</marquee>
     <div id="user-info">
       <p><strong>ID:</strong> <span id="user-id"></span></p>
       <p><strong>Username:</strong> <span id="username"></span></p>
       <p><strong>Email:</strong> <span id="email"></span></p>
-      <p><strong>First Name:</strong> <span id="first-name"></span></p>
-      <p><strong>Last Name:</strong> <span id="last-name"></span></p>
-      <p><strong>Campus:</strong> <span id="campus"></span></p>
       <p><strong>Total XP:</strong> <span id="total-xp"></span></p>
-      <p><strong>Audits Assigned:</strong> <span id="audits-assigned"></span></p>
-      <div id="attributes">
-        <strong>Attributes:</strong>
-      </div>
-      <p><strong>Records Count:</strong> <span id="records-count"></span></p>
     </div>
     <div id="graphs">
       <div class="graph-container">
         <h3>XP Over Time</h3>
-        <svg id="xp-over-time" width="700" height="450"></svg>
+        <svg id="xp-over-time" width="600" height="400"></svg>
       </div>
       <div class="graph-container">
         <h3>XP Per Month</h3>
-        <svg id="xp-per-month" height="500"></svg> <!-- Width set dynamically in JS -->
-      </div>
-      <div class="graph-container">
-        <h3>Audit Ratio</h3>
-        <svg id="audit-ratio" width="700" height="450"></svg>
+        <svg id="xp-per-month" width="600" height="400"></svg>
       </div>
     </div>
   </div>
