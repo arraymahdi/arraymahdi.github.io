@@ -16,7 +16,7 @@ document.getElementById('login-form').addEventListener('submit', async (e) => {
   
   try {
     const credentials = btoa(`${usernameOrEmail}:${password}`);
-    const response = await fetch('https://learn.reboot01.com/api/auth/signin', {
+    const response = await fetch('https://cors-anywhere.herokuapp.com/https://learn.reboot01.com/api/auth/signin', {
       method: 'POST',
       headers: { 'Authorization': `Basic ${credentials}` }
     });
@@ -87,14 +87,12 @@ async function showProfile() {
     const user = userData.data?.user[0];
     if (!user) throw new Error('User data not found');
 
-    // Populate user info
     ['user-id', 'username', 'email', 'first-name', 'last-name', 'campus'].forEach(id => {
       document.getElementById(id).textContent = user[id.replace('-', '')] || 'N/A';
     });
     document.getElementById('audits-assigned').textContent = user.auditsAssigned || 0;
     document.getElementById('records-count').textContent = user.records?.length || 0;
 
-    // Attributes
     const attrsContainer = document.getElementById('attributes');
     attrsContainer.innerHTML = '<strong>Attributes:</strong>';
     if (user.attrs && typeof user.attrs === 'object') {
@@ -107,11 +105,9 @@ async function showProfile() {
         });
     }
 
-    // Total XP
     const totalXP = user.transactions?.reduce((sum, t) => sum + t.amount, 0) || 0;
     document.getElementById('total-xp').textContent = totalXP.toLocaleString();
 
-    // Render graphs
     renderXpOverTime(user.transactions || []);
     renderXpPerMonth(user.transactions || []);
     renderAuditRatio({ auditRatio: user.auditRatio || 0 });
@@ -124,7 +120,7 @@ async function showProfile() {
 }
 
 async function fetchGraphQL(jwt, query) {
-  const response = await fetch('https://learn.reboot01.com/api/graphql-engine/v1/graphql', {
+  const response = await fetch('https://cors-anywhere.herokuapp.com/https://learn.reboot01.com/api/graphql-engine/v1/graphql', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -184,14 +180,13 @@ function renderXpPerMonth(transactions) {
   if (!svg) return console.error('SVG element with ID "xp-per-month" not found');
   svg.innerHTML = '';
   
-  // Fixed visible width, full width for scrolling
   const visibleWidth = 800, height = 500, padding = 80;
-  const fullWidth = transactions.length * 60; // 60px per bar for scrolling
+  const fullWidth = transactions.length * 60;
   
   svg.setAttribute('width', fullWidth);
   svg.setAttribute('viewBox', `0 0 ${fullWidth} ${height}`);
-  container.style.overflowX = 'auto'; // Enable horizontal scrolling
-  container.style.maxWidth = `${visibleWidth}px`; // Limit visible area
+  container.style.overflowX = 'auto';
+  container.style.maxWidth = `${visibleWidth}px`;
 
   if (!transactions.length) return renderNoData(svg, 'No XP Data Available');
 
