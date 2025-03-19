@@ -1,61 +1,216 @@
-// ... (Keep existing code up to showProfile function unchanged)
+const loginSection = document.getElementById('login-section');
+const profileSection = document.getElementById('profile-section');
+const errorMessage = document.getElementById('error-message');
+const logoutButton = document.getElementById('logout-button');
 
+// Check if JWT exists on page load
+if (localStorage.getItem('jwt')) {
+  showProfile();
+} else {
+  showLogin();
+}
+
+// Login form submission
+document.getElementById('login-form').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const usernameOrEmail = document.getElementById('usernameOrEmail').value;
+  const password = document.getElementById('password').value;
+  const credentials = btoa(`${usernameOrEmail}:${password}`);
+
+  try {
+    const response = await fetch('https://learn.reboot01.com/api/auth/signin', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Basic ${credentials}`
+      }
+    });
+
+    if (!response.ok) throw new Error('Invalid credentials');
+
+    const data = await response.json();
+    console.log('Login Response:', data);
+    const token = typeof data === 'string' ? data : data.token;
+    if (!token) throw new Error('No token found in response');
+    localStorage.setItem('jwt', token);
+    console.log('Stored JWT:', localStorage.getItem('jwt'));
+    showProfile();
+  } catch (error) {
+    console.error('Login Error:', error.message);
+    errorMessage.style.display = 'block';
+  }
+});
+
+// Logout
+logoutButton.addEventListener('click', () => {
+  localStorage.removeItem('jwt');
+  showLogin();
+});
+
+// Show login section
+function showLogin() {
+  loginSection.style.display = 'block';
+  profileSection.style.display = 'none';
+}
+
+function decodeJwtPayload(token) {
+  try {
+    const base64Url = token.split('.')[1]; // Get the payload (second part)
+    const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/'); // Convert base64url to base64
+    const jsonPayload = atob(base64); // Decode base64 to string
+    return JSON.parse(jsonPayload); // Parse to JSON
+  } catch (error) {
+    console.error('Error decoding JWT:', error);
+    return null;
+  }
+}
+
+// Show profile section and fetch data
 async function showProfile() {
-  // ... (Keep existing code up to the graphs section unchanged)
+  loginSection.style.display = 'none';
+  profileSection.style.display = 'block';
 
-  // Fetch total XP
-  const xpData = await fetchGraphQL(jwt, `
-    {
-      transaction_aggregate(where: { type: { _eq: "xp" } }) {
-        aggregate {
-          sum {
-            amount
+  const jwt = localStorage.getItem('jwt');
+  if (!jwt) {
+    console.log('No JWT found, showing login');
+    showLogin();
+    return;
+  }
+
+  // Decode JWT to get user ID
+  const payload = decodeJwtPayload(jwt);
+  if (!payload || !payload.sub) {
+    console.error('Invalid JWT payload or missing user ID');
+    localStorage.removeItem('jwt');
+    showLogin();
+    return;
+  }
+  const userId = payload.sub; // Use 'sub' as the user ID field; adjust if different
+
+  try {
+    // Fetch user info using the authenticated user's ID
+    const userData = await fetchGraphQL(jwt, `
+      {
+        user(where: {id: {_eq: "${userId}"}}) {
+          id
+          login
+          email
+          firstName
+          lastName
+          campus
+          auditRatio
+          auditsAssigned
+          attrs
+          records {
+            id
+            createdAt
           }
         }
       }
-    }
-  `);
-  const totalXP = xpData.data?.transaction_aggregate?.aggregate?.sum?.amount || 0;
-  document.getElementById('total-xp').textContent = totalXP;
+    `);
+    console.log('Raw User Data Response:', userData);
+    if (!userData.data?.user?.length) throw new Error('User data not found or empty');
+    const user = userData.data.user[0]; // Single user matching the ID
+    document.getElementById('user-id').textContent = user.id || 'N/A';
+    document.getElementById('username').textContent = user.login || 'N/A';
+    document.getElementById('email').textContent = user.email || 'N/A';
+    document.getElementById('first-name').textContent = user.firstName || 'N/A';
+    document.getElementById('last-name').textContent = user.lastName || 'N/A';
+    document.getElementById('campus').textContent = user.campus || 'N/A';
+    document.getElementById('audits-assigned').textContent = user.auditsAssigned || 0;
+    document.getElementById('records-count').textContent = user.records?.length || 0;
 
-  // Fetch XP over time (for line graph)
-  const xpOverTimeData = await fetchGraphQL(jwt, `
-    {
-      transaction(where: { type: { _eq: "xp" } }, order_by: { createdAt: asc }) {
-        amount
-        createdAt
+    // Handle attributes
+    const attrsContainer = document.getElementById('attributes');
+    attrsContainer.innerHTML = '<strong>Attributes:</strong>';
+    if (user.attrs && typeof user.attrs === 'object') {
+      Object.entries(user.attrs).forEach(([key, value]) => {
+        if (['email', 'firstName', 'lastName', 'id-cardUploadId', 'pro-picUploadId'].includes(key)) return;
+        const p = document.createElement('p');
+        p.innerHTML = `<span class="attr-key">${key}:</span> <span class="attr-value">${value || 'N/A'}</span>`;
+        attrsContainer.appendChild(p);
+      });
+    } else {
+      const p = document.createElement('p');
+      p.textContent = 'N/A';
+      attrsContainer.appendChild(p);
+    }
+
+    // Fetch total XP
+    const xpData = await fetchGraphQL(jwt, `
+      {
+        transaction_aggregate(where: { type: { _eq: "xp" } }) {
+          aggregate {
+            sum {
+              amount
+            }
+          }
+        }
       }
-    }
-  `);
-  const transactions = xpOverTimeData.data?.transaction || [];
-  renderXpOverTime(transactions);
+    `);
+    const totalXP = xpData.data?.transaction_aggregate?.aggregate?.sum?.amount || 0;
+    document.getElementById('total-xp').textContent = totalXP;
 
-  // Fetch XP per year (for bar chart)
-  const xpPerYearData = await fetchGraphQL(jwt, `
-    {
-      transaction(where: { type: { _eq: "xp" } }) {
-        amount
-        createdAt
-      }
-    }
-  `);
-  renderXpPerYear(xpPerYearData.data?.transaction || []);
-
-  // Fetch audits assigned per year
-  const auditsPerYearData = await fetchGraphQL(jwt, `
-    {
-      user(where: {id: {_eq: "${userId}"}}) {
-        auditsAssigned
-        records {
+    // Fetch XP over time (for line graph)
+    const xpOverTimeData = await fetchGraphQL(jwt, `
+      {
+        transaction(where: { type: { _eq: "xp" } }, order_by: { createdAt: asc }) {
+          amount
           createdAt
         }
       }
-    }
-  `);
-  renderAuditsPerYear(auditsPerYearData.data?.user[0] || {});
+    `);
+    const transactions = xpOverTimeData.data?.transaction || [];
+    renderXpOverTime(transactions);
 
-  // Render audit ratio (existing)
-  renderAuditRatio({ auditRatio: user.auditRatio || 0 });
+    // Fetch XP per year (for bar chart)
+    const xpPerYearData = await fetchGraphQL(jwt, `
+      {
+        transaction(where: { type: { _eq: "xp" } }) {
+          amount
+          createdAt
+        }
+      }
+    `);
+    renderXpPerYear(xpPerYearData.data?.transaction || []);
+
+    // Fetch audits assigned per year
+    const auditsPerYearData = await fetchGraphQL(jwt, `
+      {
+        user(where: {id: {_eq: "${userId}"}}) {
+          auditsAssigned
+          records {
+            createdAt
+          }
+        }
+      }
+    `);
+    renderAuditsPerYear(auditsPerYearData.data?.user[0] || {});
+
+    // Render audit ratio
+    renderAuditRatio({ auditRatio: user.auditRatio || 0 });
+
+  } catch (error) {
+    console.error('Error in showProfile:', error.message);
+    if (error.message.includes('Failed to fetch data')) {
+      localStorage.removeItem('jwt');
+      showLogin();
+    }
+  }
+}
+
+// Helper function to fetch GraphQL data
+async function fetchGraphQL(jwt, query) {
+  const response = await fetch('https://learn.reboot01.com/api/graphql-engine/v1/graphql', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${jwt}`
+    },
+    body: JSON.stringify({ query })
+  });
+
+  if (!response.ok) throw new Error('Failed to fetch data');
+  return response.json();
 }
 
 // Enhanced XP Over Time with Year Markers and Tooltips
@@ -109,7 +264,7 @@ function renderXpOverTime(transactions) {
     svg.appendChild(circle);
   });
 
-  // Axes (unchanged from original)
+  // Axes
   const xAxis = document.createElementNS('http://www.w3.org/2000/svg', 'line');
   xAxis.setAttribute('x1', paddingLeft);
   xAxis.setAttribute('y1', height - paddingTopBottom);
@@ -173,7 +328,7 @@ function renderXpOverTime(transactions) {
   });
 }
 
-// New Bar Chart: XP per Year
+// Bar Chart: XP per Year
 function renderXpPerYear(transactions) {
   const svg = document.getElementById('xp-per-year');
   svg.innerHTML = '';
@@ -258,7 +413,7 @@ function renderXpPerYear(transactions) {
   });
 }
 
-// New Bar Chart: Audits Assigned per Year
+// Bar Chart: Audits Assigned per Year
 function renderAuditsPerYear(userData) {
   const svg = document.getElementById('audits-per-year');
   svg.innerHTML = '';
@@ -344,9 +499,84 @@ function renderAuditsPerYear(userData) {
   });
 }
 
-// Tooltip functionality (add this at the end of the script)
-document.querySelectorAll('.graph-point, .graph-bar').forEach(element => {
-  element.addEventListener('mouseover', (e) => {
+// Render Audit Ratio as a pie chart using auditRatio
+function renderAuditRatio(data) {
+  const svg = document.getElementById('xp-per-project');
+  svg.innerHTML = '';
+
+  const auditRatio = data.auditRatio;
+  if (auditRatio === 0) {
+    const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+    text.setAttribute('x', '50%');
+    text.setAttribute('y', '50%');
+    text.setAttribute('text-anchor', 'middle');
+    text.setAttribute('class', 'graph-label');
+    text.textContent = 'No Audit Ratio Available';
+    svg.appendChild(text);
+    return;
+  }
+
+  const width = 500;
+  const height = 300;
+  const radius = Math.min(width, height) / 2 - 50;
+  const centerX = width / 2;
+  const centerY = height / 2;
+
+  const angles = {
+    ratio: auditRatio * 2 * Math.PI,
+    remaining: (1 - auditRatio) * 2 * Math.PI
+  };
+
+  function createArc(startAngle, endAngle, color) {
+    const startX = centerX + radius * Math.cos(startAngle);
+    const startY = centerY + radius * Math.sin(startAngle);
+    const endX = centerX + radius * Math.cos(endAngle);
+    const endY = centerY + radius * Math.sin(endAngle);
+    const largeArcFlag = endAngle - startAngle <= Math.PI ? 0 : 1;
+
+    const d = [
+      `M ${centerX},${centerY}`,
+      `L ${startX},${startY}`,
+      `A ${radius},${radius} 0 ${largeArcFlag} 1 ${endX},${endY}`,
+      'Z'
+    ].join(' ');
+
+    const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    path.setAttribute('d', d);
+    path.setAttribute('fill', color);
+    path.setAttribute('class', 'graph-bar');
+    svg.appendChild(path);
+  }
+
+  const startAngleRatio = 0;
+  const endAngleRatio = angles.ratio;
+  createArc(startAngleRatio, endAngleRatio, '#0ff');
+
+  const startAngleRemaining = endAngleRatio;
+  const endAngleRemaining = startAngleRemaining + angles.remaining;
+  createArc(startAngleRemaining, endAngleRemaining, '#f0f');
+
+  const labelData = [
+    { name: 'Audit Ratio', value: `${(auditRatio * 100).toFixed(2)}%`, angle: angles.ratio / 2 },
+    { name: 'Remaining', value: `${((1 - auditRatio) * 100).toFixed(2)}%`, angle: startAngleRemaining + angles.remaining / 2 }
+  ];
+
+  labelData.forEach(data => {
+    const labelX = centerX + (radius * 0.7) * Math.cos(data.angle);
+    const labelY = centerY + (radius * 0.7) * Math.sin(data.angle);
+    const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+    text.setAttribute('x', labelX);
+    text.setAttribute('y', labelY);
+    text.setAttribute('text-anchor', 'middle');
+    text.setAttribute('class', 'graph-label');
+    text.textContent = `${data.name}: ${data.value}`;
+    svg.appendChild(text);
+  });
+}
+
+// Tooltip functionality
+document.addEventListener('mouseover', (e) => {
+  if (e.target.matches('.graph-point, .graph-bar')) {
     const tooltip = document.createElement('div');
     tooltip.className = 'tooltip';
     tooltip.textContent = e.target.getAttribute('data-tooltip');
@@ -355,11 +585,11 @@ document.querySelectorAll('.graph-point, .graph-bar').forEach(element => {
     const rect = e.target.getBoundingClientRect();
     tooltip.style.left = `${rect.left + window.scrollX}px`;
     tooltip.style.top = `${rect.top + window.scrollY - 30}px`;
-  });
-
-  element.addEventListener('mouseout', () => {
-    document.querySelector('.tooltip')?.remove();
-  });
+  }
 });
 
-// ... (Keep existing fetchGraphQL and renderAuditRatio functions unchanged)
+document.addEventListener('mouseout', (e) => {
+  if (e.target.matches('.graph-point, .graph-bar')) {
+    document.querySelector('.tooltip')?.remove();
+  }
+});
