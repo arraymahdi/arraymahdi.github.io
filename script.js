@@ -139,6 +139,10 @@ async function fetchGraphQL(jwt, query) {
 
 function renderXpOverTime(transactions) {
   const svg = document.getElementById('xp-over-time');
+  if (!svg) {
+    console.error('SVG element with ID "xp-over-time" not found in the DOM');
+    return;
+  }
   svg.innerHTML = '';
   const width = 600, height = 400, padding = 60;
 
@@ -166,6 +170,10 @@ function renderXpOverTime(transactions) {
 
 function renderXpPerMonth(transactions) {
   const svg = document.getElementById('xp-per-month');
+  if (!svg) {
+    console.error('SVG element with ID "xp-per-month" not found in the DOM');
+    return;
+  }
   svg.innerHTML = '';
   const width = 600, height = 400, padding = 60;
 
@@ -208,6 +216,10 @@ function renderXpPerMonth(transactions) {
 
 function renderAuditRatio(data) {
   const svg = document.getElementById('audit-ratio');
+  if (!svg) {
+    console.error('SVG element with ID "audit-ratio" not found in the DOM');
+    return;
+  }
   svg.innerHTML = '';
   const width = 600, height = 400, radius = 150;
 
@@ -315,7 +327,7 @@ document.addEventListener('mouseout', e => {
   }
 });
 
-// Include D3.js (you'll need to add this to your project)
+// Include D3.js
 const d3Script = document.createElement('script');
 d3Script.src = 'https://d3js.org/d3.v7.min.js';
 document.head.appendChild(d3Script);
