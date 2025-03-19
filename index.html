@@ -3,13 +3,13 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Profile Page</title>
+  <title>Student Progress Dashboard</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <!-- Login Section -->
   <div id="login-section">
-    <h2 data-text="Login">Login</h2>
+    <h2>Login</h2>
     <form id="login-form">
       <label for="usernameOrEmail">Username or Email:</label>
       <input type="text" id="usernameOrEmail" required>
@@ -22,9 +22,9 @@
 
   <!-- Profile Section (hidden initially) -->
   <div id="profile-section" style="display: none;">
-    <h2 data-text="Profile">Profile</h2>
+    <h2>Student Profile</h2>
     <button id="logout-button">Logout</button>
-    <marquee>Welcome to the Reboot Student Report Page!</marquee>
+    <marquee>Welcome to the Reboot Student Progress Dashboard!</marquee>
     <div id="user-info">
       <p><strong>ID:</strong> <span id="user-id"></span></p>
       <p><strong>Username:</strong> <span id="username"></span></p>
@@ -36,19 +36,22 @@
       <p><strong>Audits Assigned:</strong> <span id="audits-assigned"></span></p>
       <div id="attributes">
         <strong>Attributes:</strong>
-        <!-- Individual attributes will be appended here dynamically -->
       </div>
       <p><strong>Records Count:</strong> <span id="records-count"></span></p>
     </div>
     <div id="graphs">
-      <h3>XP Over Time</h3>
-      <svg id="xp-over-time" width="500" height="300"></svg>
-      <h3>XP Per Year</h3>
-      <svg id="xp-per-year" width="500" height="300"></svg>
-      <h3>Audits Assigned Per Year</h3>
-      <svg id="audits-per-year" width="500" height="300"></svg>
-      <h3>Audit Ratio</h3>
-      <svg id="xp-per-project" width="500" height="300"></svg>
+      <div class="graph-container">
+        <h3>XP Over Time</h3>
+        <svg id="xp-over-time" width="600" height="400"></svg>
+      </div>
+      <div class="graph-container">
+        <h3>XP Per Month</h3>
+        <svg id="xp-per-month" width="600" height="400"></svg>
+      </div>
+      <div class="graph-container">
+        <h3>Audit Ratio</h3>
+        <svg id="audit-ratio" width="600" height="400"></svg>
+      </div>
     </div>
   </div>
 
