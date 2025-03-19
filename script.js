@@ -18,8 +18,7 @@ document.getElementById('login-form').addEventListener('submit', async (e) => {
 
   try {
     const credentials = btoa(`${usernameOrEmail}:${password}`);
-    // Replace with your proxy URL or test locally
-    const response = await fetch('https://your-proxy.vercel.app/signin', {
+    const response = await fetch('https://learn.reboot01.com/api/auth/signin', {
       method: 'POST',
       headers: { 'Authorization': `Basic ${credentials}` }
     });
@@ -82,8 +81,9 @@ async function fetchProfileData() {
     const userData = await fetchGraphQL(jwt, `
       {
         user(where: {id: {_eq: "${userId}"}}) {
-          id login email
-          transactions(where: { type: { _eq: "xp" } }) { amount createdAt }
+          id login email auditRatio auditsAssigned attrs
+          records { id createdAt }
+          transactions(where: { type: { _eq: "xp" } }) { amount createdAt path }
         }
       }
     `);
@@ -94,11 +94,25 @@ async function fetchProfileData() {
     document.getElementById('user-id').textContent = user.id || 'N/A';
     document.getElementById('username').textContent = user.login || 'N/A';
     document.getElementById('email').textContent = user.email || 'N/A';
+    document.getElementById('audits-assigned').textContent = user.auditsAssigned || '0';
+    document.getElementById('records-count').textContent = user.records?.length || '0';
+
+    const attrsContainer = document.getElementById('attributes');
+    attrsContainer.innerHTML = '<strong>Attributes:</strong>';
+    if (user.attrs && typeof user.attrs === 'object') {
+      Object.entries(user.attrs).forEach(([key, value]) => {
+        const p = document.createElement('p');
+        p.innerHTML = `<span>${key}:</span> ${value || 'N/A'}`;
+        attrsContainer.appendChild(p);
+      });
+    }
+
     const totalXP = user.transactions?.reduce((sum, t) => sum + t.amount, 0) || 0;
     document.getElementById('total-xp').textContent = totalXP.toLocaleString();
 
     renderXpOverTime(user.transactions || []);
     renderXpPerMonth(user.transactions || []);
+    renderAuditRatio(user.auditRatio || 0);
 
   } catch (error) {
     console.error('Profile Error:', error);
@@ -108,7 +122,7 @@ async function fetchProfileData() {
 }
 
 async function fetchGraphQL(jwt, query) {
-  const response = await fetch('https://your-proxy.vercel.app/graphql', {
+  const response = await fetch('https://learn.reboot01.com/api/graphql-engine/v1/graphql', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -124,31 +138,54 @@ async function fetchGraphQL(jwt, query) {
 function renderXpOverTime(transactions) {
   const svg = d3.select('#xp-over-time');
   svg.selectAll('*').remove();
-  const width = 600, height = 400, padding = 60;
+  const width = 700, height = 450, padding = 70;
 
   if (!transactions.length) {
     svg.append('text')
       .attr('x', width / 2)
       .attr('y', height / 2)
       .attr('text-anchor', 'middle')
-      .text('No XP Data Available');
+      .attr('class', 'graph-label')
+      .text('No XP Data');
     return;
   }
 
   let cumulativeXP = 0;
   const data = transactions.map(t => ({ date: new Date(t.createdAt), xp: (cumulativeXP += t.amount) }));
   const xScale = d3.scaleTime().domain(d3.extent(data, d => d.date)).range([padding, width - padding]);
-  const yScale = d3.scaleLinear().domain([0, d3.max(data, d => d.xp)]).range([height - padding, padding]);
+  const yScale = d3.scaleLinear().domain([0, d3.max(data, d => d.xp) * 1.1]).range([height - padding, padding]);
 
   svg.append('path')
     .datum(data)
     .attr('class', 'graph-line')
-    .attr('d', d3.line().x(d => xScale(d.date)).y(d => yScale(d.xp)));
+    .attr('d', d3.line().x(d => xScale(d.date)).y(d => yScale(d.xp)).curve(d3.curveMonotoneX));
+
+  svg.selectAll('.graph-point')
+    .data(data)
+    .enter()
+    .append('circle')
+    .attr('class', 'graph-point')
+    .attr('cx', d => xScale(d.date))
+    .attr('cy', d => yScale(d.xp))
+    .attr('r', 5)
+    .on('mouseover', function(event, d) {
+      const tooltip = document.createElement('div');
+      tooltip.className = 'tooltip';
+      tooltip.textContent = `${d.date.toLocaleDateString()}: ${d.xp.toLocaleString()} XP`;
+      document.body.appendChild(tooltip);
+      const rect = this.getBoundingClientRect();
+      tooltip.style.left = `${rect.left + window.scrollX + rect.width / 2}px`;
+      tooltip.style.top = `${rect.top + window.scrollY - tooltip.offsetHeight - 10}px`;
+    })
+    .on('mouseout', () => document.querySelector('.tooltip')?.remove());
 
   svg.append('g')
     .attr('class', 'graph-axis')
     .attr('transform', `translate(0, ${height - padding})`)
-    .call(d3.axisBottom(xScale).ticks(5));
+    .call(d3.axisBottom(xScale).ticks(10).tickFormat(d3.timeFormat('%b %Y')))
+    .selectAll('text')
+    .attr('transform', 'rotate(-45)')
+    .attr('text-anchor', 'end');
 
   svg.append('g')
     .attr('class', 'graph-axis')
@@ -159,14 +196,22 @@ function renderXpOverTime(transactions) {
 function renderXpPerMonth(transactions) {
   const svg = d3.select('#xp-per-month');
   svg.selectAll('*').remove();
-  const width = 600, height = 400, padding = 60;
+  const visibleWidth = 700, height = 500, padding = 70;
+  const barWidth = 25; // Fixed bar width
+  const fullWidth = Math.max(transactions.length * (barWidth + 2), visibleWidth); // Tight spacing
+
+  svg.attr('width', fullWidth);
+  svg.attr('viewBox', `0 0 ${fullWidth} ${height}`);
+  svg.node().parentElement.style.maxWidth = `${visibleWidth}px`;
+  svg.node().parentElement.style.overflowX = 'auto';
 
   if (!transactions.length) {
     svg.append('text')
-      .attr('x', width / 2)
+      .attr('x', fullWidth / 2)
       .attr('y', height / 2)
       .attr('text-anchor', 'middle')
-      .text('No XP Data Available');
+      .attr('class', 'graph-label')
+      .text('No XP Data');
     return;
   }
 
@@ -181,21 +226,36 @@ function renderXpPerMonth(transactions) {
 
   const xScale = d3.scaleBand()
     .domain(data.map(d => d.date.toISOString().slice(0, 7)))
-    .range([padding, width - padding])
-    .padding(0.2);
+    .range([padding, fullWidth - padding])
+    .padding(0.05); // Tight padding
   const yScale = d3.scaleLinear()
-    .domain([0, d3.max(data, d => d.xp)])
+    .domain([0, d3.max(data, d => d.xp) * 1.2])
     .range([height - padding, padding]);
+
+  svg.append('g')
+    .attr('class', 'graph-grid')
+    .attr('transform', `translate(${padding}, 0)`)
+    .call(d3.axisLeft(yScale).ticks(10).tickSize(-fullWidth + 2 * padding).tickFormat(''));
 
   svg.selectAll('.graph-bar')
     .data(data)
     .enter()
     .append('rect')
     .attr('class', 'graph-bar')
-    .attr('x', d => xScale(d.date.toISOString().slice(0, 7)))
+    .attr('x', d => xScale(d.date.toISOString().slice(0, 7)) + (xScale.bandwidth() - barWidth) / 2) // Center bars under ticks
     .attr('y', d => yScale(d.xp))
-    .attr('width', xScale.bandwidth())
-    .attr('height', d => height - padding - yScale(d.xp));
+    .attr('width', barWidth)
+    .attr('height', d => height - padding - yScale(d.xp))
+    .on('mouseover', function(event, d) {
+      const tooltip = document.createElement('div');
+      tooltip.className = 'tooltip';
+      tooltip.textContent = `${d.date.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}: ${d.xp.toLocaleString()} XP`;
+      document.body.appendChild(tooltip);
+      const rect = this.getBoundingClientRect();
+      tooltip.style.left = `${rect.left + window.scrollX + rect.width / 2}px`;
+      tooltip.style.top = `${rect.top + window.scrollY - tooltip.offsetHeight - 10}px`;
+    })
+    .on('mouseout', () => document.querySelector('.tooltip')?.remove());
 
   svg.append('g')
     .attr('class', 'graph-axis')
@@ -209,4 +269,55 @@ function renderXpPerMonth(transactions) {
     .attr('class', 'graph-axis')
     .attr('transform', `translate(${padding}, 0)`)
     .call(d3.axisLeft(yScale).ticks(5));
+}
+
+function renderAuditRatio(auditRatio) {
+  const svg = d3.select('#audit-ratio');
+  svg.selectAll('*').remove();
+  const width = 700, height = 450, radius = 150;
+
+  if (!auditRatio) {
+    svg.append('text')
+      .attr('x', width / 2)
+      .attr('y', height / 2)
+      .attr('text-anchor', 'middle')
+      .attr('class', 'graph-label')
+      .text('No Audit Data');
+    return;
+  }
+
+  const data = [
+    { name: 'Audits Done', value: auditRatio },
+    { name: 'Audits Left', value: 1 - auditRatio }
+  ];
+  const arc = d3.arc().innerRadius(80).outerRadius(radius);
+  const pie = d3.pie().value(d => d.value);
+
+  const arcs = svg.selectAll('.arc')
+    .data(pie(data))
+    .enter()
+    .append('g')
+    .attr('class', 'arc')
+    .attr('transform', `translate(${width / 2}, ${height / 2})`);
+
+  arcs.append('path')
+    .attr('d', arc)
+    .attr('class', 'graph-bar')
+    .attr('fill', (d, i) => i === 0 ? '#8b5a2b' : '#d2b48c')
+    .on('mouseover', function(event, d) {
+      const tooltip = document.createElement('div');
+      tooltip.className = 'tooltip';
+      tooltip.textContent = `${d.data.name}: ${(d.data.value * 100).toFixed(1)}%`;
+      document.body.appendChild(tooltip);
+      const rect = this.getBoundingClientRect();
+      tooltip.style.left = `${rect.left + window.scrollX + rect.width / 2}px`;
+      tooltip.style.top = `${rect.top + window.scrollY - tooltip.offsetHeight - 10}px`;
+    })
+    .on('mouseout', () => document.querySelector('.tooltip')?.remove());
+
+  arcs.append('text')
+    .attr('transform', d => `translate(${arc.centroid(d)})`)
+    .attr('class', 'graph-label')
+    .attr('text-anchor', 'middle')
+    .text(d => `${d.data.name}: ${(d.data.value * 100).toFixed(1)}%`);
 }
