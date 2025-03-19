@@ -139,10 +139,7 @@ async function fetchGraphQL(jwt, query) {
 
 function renderXpOverTime(transactions) {
   const svg = document.getElementById('xp-over-time');
-  if (!svg) {
-    console.error('SVG element with ID "xp-over-time" not found');
-    return;
-  }
+  if (!svg) return console.error('SVG element with ID "xp-over-time" not found');
   svg.innerHTML = '';
   const width = 700, height = 450, padding = 70;
 
@@ -153,53 +150,51 @@ function renderXpOverTime(transactions) {
   const xScale = d3.scaleTime().domain(d3.extent(data, d => d.date)).range([padding, width - padding]);
   const yScale = d3.scaleLinear().domain([0, d3.max(data, d => d.xp) * 1.1]).range([height - padding, padding]);
 
-  // Grid lines
-  const yGrid = d3.axisLeft(yScale).ticks(5).tickSize(-width + 2 * padding).tickFormat('');
   svg.append('g')
     .attr('class', 'grid')
     .attr('transform', `translate(${padding}, 0)`)
-    .call(yGrid);
+    .call(d3.axisLeft(yScale).ticks(5).tickSize(-width + 2 * padding).tickFormat(''));
 
-  // Line
   const line = d3.line().x(d => xScale(d.date)).y(d => yScale(d.xp)).curve(d3.curveMonotoneX);
   const path = svg.appendChild(createPath(line(data), 'graph-line'));
   path.animate([{ strokeDashoffset: path.getTotalLength() }, { strokeDashoffset: 0 }], { duration: 1000 });
 
-  // Points
   data.forEach(d => {
     const circle = createCircle(xScale(d.date), yScale(d.xp), 5, 'graph-point');
     circle.setAttribute('data-tooltip', `${d.date.toLocaleDateString()}: ${d.xp.toLocaleString()} XP`);
     svg.appendChild(circle);
   });
 
-  // Axes
-  const xAxis = d3.axisBottom(xScale).ticks(10).tickFormat(d3.timeFormat('%b %Y'));
-  const yAxis = d3.axisLeft(yScale).ticks(5);
   svg.append('g')
     .attr('class', 'graph-axis')
     .attr('transform', `translate(0, ${height - padding})`)
-    .call(xAxis)
+    .call(d3.axisBottom(xScale).ticks(10).tickFormat(d3.timeFormat('%b %Y')))
     .selectAll('text')
     .attr('transform', 'rotate(-45)')
     .attr('text-anchor', 'end');
   svg.append('g')
     .attr('class', 'graph-axis')
     .attr('transform', `translate(${padding}, 0)`)
-    .call(yAxis);
+    .call(d3.axisLeft(yScale).ticks(5));
 }
 
 function renderXpPerMonth(transactions) {
+  const container = document.getElementById('xp-per-month').parentElement;
   const svg = document.getElementById('xp-per-month');
-  if (!svg) {
-    console.error('SVG element with ID "xp-per-month" not found');
-    return;
-  }
+  if (!svg) return console.error('SVG element with ID "xp-per-month" not found');
   svg.innerHTML = '';
-  const width = 800, height = 500, padding = 80; // Larger size for clarity
+  
+  // Fixed visible width, full width for scrolling
+  const visibleWidth = 800, height = 500, padding = 80;
+  const fullWidth = transactions.length * 60; // 60px per bar for scrolling
+  
+  svg.setAttribute('width', fullWidth);
+  svg.setAttribute('viewBox', `0 0 ${fullWidth} ${height}`);
+  container.style.overflowX = 'auto'; // Enable horizontal scrolling
+  container.style.maxWidth = `${visibleWidth}px`; // Limit visible area
 
   if (!transactions.length) return renderNoData(svg, 'No XP Data Available');
 
-  // Group by year and month
   const monthlyXP = d3.group(transactions, t => {
     const d = new Date(t.createdAt);
     return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
@@ -209,63 +204,52 @@ function renderXpPerMonth(transactions) {
     xp: d3.sum(values, v => v.amount)
   })).sort((a, b) => a.date - b.date);
 
-  // Scales
   const xScale = d3.scaleBand()
     .domain(data.map(d => d.date.toISOString().slice(0, 7)))
-    .range([padding, width - padding])
-    .padding(0.4); // Increased padding for better spacing
+    .range([padding, fullWidth - padding])
+    .padding(0.4);
   const yScale = d3.scaleLinear()
-    .domain([0, d3.max(data, d => d.xp) * 1.2]) // Extra headroom
+    .domain([0, d3.max(data, d => d.xp) * 1.2])
     .range([height - padding, padding]);
 
-  // Grid lines
-  const yGrid = d3.axisLeft(yScale).ticks(5).tickSize(-width + 2 * padding).tickFormat('');
   svg.append('g')
     .attr('class', 'grid')
     .attr('transform', `translate(${padding}, 0)`)
-    .call(yGrid);
+    .call(d3.axisLeft(yScale).ticks(5).tickSize(-fullWidth + 2 * padding).tickFormat(''));
 
-  // Bars
   data.forEach(d => {
     const bar = createRect(
       xScale(d.date.toISOString().slice(0, 7)),
-      height - padding, // Start at bottom
+      height - padding,
       xScale.bandwidth(),
-      0, // Initial height 0
+      0,
       'graph-bar'
     );
     bar.setAttribute('data-tooltip', `${d.date.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}: ${d.xp.toLocaleString()} XP`);
     svg.appendChild(bar);
-    // Animate height only once on load
     setTimeout(() => {
       bar.setAttribute('y', yScale(d.xp));
       bar.setAttribute('height', height - padding - yScale(d.xp));
     }, 100);
   });
 
-  // Axes
-  const xAxis = d3.axisBottom(xScale).tickFormat(d => new Date(d).toLocaleDateString('en-US', { month: 'short', year: 'numeric' }));
-  const yAxis = d3.axisLeft(yScale).ticks(5);
   svg.append('g')
     .attr('class', 'graph-axis')
     .attr('transform', `translate(0, ${height - padding})`)
-    .call(xAxis)
+    .call(d3.axisBottom(xScale).tickFormat(d => new Date(d).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })))
     .selectAll('text')
     .attr('transform', 'rotate(-45)')
     .attr('text-anchor', 'end')
-    .attr('dy', '0.5em'); // Slight offset for readability
+    .attr('dy', '0.5em');
   svg.append('g')
     .attr('class', 'graph-axis')
     .attr('transform', `translate(${padding}, 0)`)
-    .call(yAxis);
+    .call(d3.axisLeft(yScale).ticks(5));
 }
 
 function renderAuditRatio(data) {
   const svg = document.getElementById('audit-ratio');
-  if (!svg) {
-    console.error('SVG element with ID "audit-ratio" not found');
-    return;
-  }
+  if (!svg) return console.error('SVG element with ID "audit-ratio" not found');
   svg.innerHTML = '';
   const width = 700, height = 450, radius = 150;
 
