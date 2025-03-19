@@ -183,6 +183,67 @@ h2 {
   text-shadow: 0 0 10px rgba(179, 136, 255, 0.5);
 }
 
+/* ... (Keep existing CSS unchanged up to #graphs) */
+
+#graphs {
+  margin-top: 30px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 40px; /* Add spacing between graphs */
+}
+
+.graph-point {
+  fill: #b388ff;
+  cursor: pointer;
+  transition: r 0.2s;
+}
+
+.graph-point:hover {
+  r: 6;
+}
+
+.graph-bar {
+  fill: #8e24aa;
+  filter: drop-shadow(0 0 5px rgba(229, 223, 231, 0.7));
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.graph-bar:hover {
+  opacity: 0.8;
+}
+
+.tooltip {
+  position: absolute;
+  background: rgba(10, 10, 51, 0.9);
+  color: #e6e6e6;
+  padding: 5px 10px;
+  border-radius: 5px;
+  border: 1px solid #b388ff;
+  font-size: 12px;
+  pointer-events: none;
+  box-shadow: 0 0 10px rgba(179, 136, 255, 0.5);
+}
+
+/* Responsive design */
+@media (max-width: 600px) {
+  #login-section,
+  #profile-section {
+    width: 90%;
+  }
+  #xp-over-time,
+  #xp-per-year,
+  #audits-per-year,
+  #xp-per-project {
+    display: block;
+    margin: 0 auto;
+    width: 100%;
+    max-width: 500px;
+    height: 300px;
+  }
+}
+
 /* Graph styling */
 .graph-line {
   stroke: #b388ff;
