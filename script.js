@@ -16,7 +16,7 @@ document.getElementById('login-form').addEventListener('submit', async (e) => {
   
   try {
     const credentials = btoa(`${usernameOrEmail}:${password}`);
-    const response = await fetch('https://cors-anywhere.herokuapp.com/https://learn.reboot01.com/api/auth/signin', {
+    const response = await fetch('https://your-proxy.vercel.app/signin', {
       method: 'POST',
       headers: { 'Authorization': `Basic ${credentials}` }
     });
@@ -120,7 +120,7 @@ async function showProfile() {
 }
 
 async function fetchGraphQL(jwt, query) {
-  const response = await fetch('https://cors-anywhere.herokuapp.com/https://learn.reboot01.com/api/graphql-engine/v1/graphql', {
+  const response = await fetch('https://your-proxy.vercel.app/graphql', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -146,7 +146,6 @@ function renderXpOverTime(transactions) {
   const xScale = d3.scaleTime().domain(d3.extent(data, d => d.date)).range([padding, width - padding]);
   const yScale = d3.scaleLinear().domain([0, d3.max(data, d => d.xp) * 1.1]).range([height - padding, padding]);
 
-  // Use d3.select for DOM elements
   d3.select(svg)
     .append('g')
     .attr('class', 'grid')
@@ -186,7 +185,7 @@ function renderXpPerMonth(transactions) {
   svg.innerHTML = '';
   
   const visibleWidth = 800, height = 500, padding = 80;
-  const fullWidth = Math.max(transactions.length * 60, visibleWidth); // Ensure minimum width
+  const fullWidth = Math.max(transactions.length * 60, visibleWidth);
   
   svg.setAttribute('width', fullWidth);
   svg.setAttribute('viewBox', `0 0 ${fullWidth} ${height}`);
