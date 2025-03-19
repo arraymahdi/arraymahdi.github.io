@@ -4,7 +4,6 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Student Progress Dashboard</title>
-  <!-- Include D3.js directly to ensure it’s loaded before script.js runs -->
   <script src="https://d3js.org/d3.v7.min.js"></script>
   <link rel="stylesheet" href="style.css">
 </head>
@@ -22,7 +21,7 @@
     <p id="error-message" style="display: none;">Invalid credentials</p>
   </div>
 
-  <!-- Profile Section (hidden initially) -->
+  <!-- Profile Section -->
   <div id="profile-section" style="display: none;">
     <h2>Student Profile</h2>
     <button id="logout-button">Logout</button>
@@ -44,20 +43,19 @@
     <div id="graphs">
       <div class="graph-container">
         <h3>XP Over Time</h3>
-        <svg id="xp-over-time" width="600" height="400"></svg>
+        <svg id="xp-over-time" width="700" height="450"></svg>
       </div>
       <div class="graph-container">
         <h3>XP Per Month</h3>
-        <svg id="xp-per-month" width="600" height="400"></svg>
+        <svg id="xp-per-month" height="500"></svg> <!-- Width set dynamically in JS -->
       </div>
       <div class="graph-container">
         <h3>Audit Ratio</h3>
-        <svg id="audit-ratio" width="600" height="400"></svg>
+        <svg id="audit-ratio" width="700" height="450"></svg>
       </div>
     </div>
   </div>
 
-  <!-- Include script.js after the DOM elements -->
   <script src="script.js"></script>
 </body>
 </html>
