@@ -7,7 +7,7 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <!-- Login Section -->
+  <!-- Login Section (unchanged) -->
   <div id="login-section">
     <h2 data-text="Login">Login</h2>
     <form id="login-form">
@@ -20,7 +20,7 @@
     <p id="error-message" style="display: none;">Invalid credentials</p>
   </div>
 
-  <!-- Profile Section (hidden initially) -->
+  <!-- Profile Section -->
   <div id="profile-section" style="display: none;">
     <h2 data-text="Profile">Profile</h2>
     <button id="logout-button">Logout</button>
@@ -36,13 +36,16 @@
       <p><strong>Audits Assigned:</strong> <span id="audits-assigned"></span></p>
       <div id="attributes">
         <strong>Attributes:</strong>
-        <!-- Individual attributes will be appended here dynamically -->
       </div>
       <p><strong>Records Count:</strong> <span id="records-count"></span></p>
     </div>
     <div id="graphs">
       <h3>XP Over Time</h3>
       <svg id="xp-over-time" width="500" height="300"></svg>
+      <h3>XP Per Year</h3>
+      <svg id="xp-per-year" width="500" height="300"></svg>
+      <h3>Audits Assigned Per Year</h3>
+      <svg id="audits-per-year" width="500" height="300"></svg>
       <h3>Audit Ratio</h3>
       <svg id="xp-per-project" width="500" height="300"></svg>
     </div>
