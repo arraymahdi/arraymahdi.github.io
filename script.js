@@ -195,10 +195,11 @@ function renderXpPerMonth(transactions) {
     return;
   }
   svg.innerHTML = '';
-  const width = 700, height = 450, padding = 70;
+  const width = 800, height = 500, padding = 80; // Larger size for clarity
 
   if (!transactions.length) return renderNoData(svg, 'No XP Data Available');
 
+  // Group by year and month
   const monthlyXP = d3.group(transactions, t => {
     const d = new Date(t.createdAt);
     return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
@@ -208,12 +209,13 @@ function renderXpPerMonth(transactions) {
     xp: d3.sum(values, v => v.amount)
   })).sort((a, b) => a.date - b.date);
 
+  // Scales
   const xScale = d3.scaleBand()
     .domain(data.map(d => d.date.toISOString().slice(0, 7)))
     .range([padding, width - padding])
-    .padding(0.3);
+    .padding(0.4); // Increased padding for better spacing
   const yScale = d3.scaleLinear()
-    .domain([0, d3.max(data, d => d.xp) * 1.1])
+    .domain([0, d3.max(data, d => d.xp) * 1.2]) // Extra headroom
     .range([height - padding, padding]);
 
   // Grid lines
@@ -224,19 +226,21 @@ function renderXpPerMonth(transactions) {
     .call(yGrid);
 
   // Bars
-  data.forEach((d, i) => {
+  data.forEach(d => {
     const bar = createRect(
       xScale(d.date.toISOString().slice(0, 7)),
-      yScale(d.xp),
+      height - padding, // Start at bottom
       xScale.bandwidth(),
-      height - padding - yScale(d.xp),
+      0, // Initial height 0
       'graph-bar'
     );
     bar.setAttribute('data-tooltip', `${d.date.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}: ${d.xp.toLocaleString()} XP`);
-    bar.style.transition = 'height 0.5s ease';
-    bar.style.height = '0px'; // Start at 0 for animation
     svg.appendChild(bar);
-    setTimeout(() => bar.setAttribute('y', yScale(d.xp)), 50 * i); // Staggered animation
+    // Animate height only once on load
+    setTimeout(() => {
+      bar.setAttribute('y', yScale(d.xp));
+      bar.setAttribute('height', height - padding - yScale(d.xp));
+    }, 100);
   });
 
   // Axes
@@ -248,7 +252,8 @@ function renderXpPerMonth(transactions) {
     .call(xAxis)
     .selectAll('text')
     .attr('transform', 'rotate(-45)')
-    .attr('text-anchor', 'end');
+    .attr('text-anchor', 'end')
+    .attr('dy', '0.5em'); // Slight offset for readability
   svg.append('g')
     .attr('class', 'graph-axis')
     .attr('transform', `translate(${padding}, 0)`)
@@ -284,7 +289,6 @@ function renderAuditRatio(data) {
     path.animate([{ transform: 'scale(0)' }, { transform: 'scale(1)' }], { duration: 800, easing: 'ease-out' });
   });
 
-  // Labels
   arcs.forEach(d => {
     const [x, y] = arc.centroid(d);
     const text = createText(x, y, `${d.data.name}: ${(d.data.value * 100).toFixed(1)}%`, 'graph-label');
