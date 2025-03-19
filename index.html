@@ -7,7 +7,7 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <!-- Login Section (unchanged) -->
+  <!-- Login Section -->
   <div id="login-section">
     <h2 data-text="Login">Login</h2>
     <form id="login-form">
@@ -20,7 +20,7 @@
     <p id="error-message" style="display: none;">Invalid credentials</p>
   </div>
 
-  <!-- Profile Section -->
+  <!-- Profile Section (hidden initially) -->
   <div id="profile-section" style="display: none;">
     <h2 data-text="Profile">Profile</h2>
     <button id="logout-button">Logout</button>
@@ -36,6 +36,7 @@
       <p><strong>Audits Assigned:</strong> <span id="audits-assigned"></span></p>
       <div id="attributes">
         <strong>Attributes:</strong>
+        <!-- Individual attributes will be appended here dynamically -->
       </div>
       <p><strong>Records Count:</strong> <span id="records-count"></span></p>
     </div>
