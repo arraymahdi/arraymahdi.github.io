@@ -110,7 +110,7 @@ async function fetchProfileData() {
     const totalXP = user.transactions?.reduce((sum, t) => sum + t.amount, 0) || 0;
     document.getElementById('total-xp').textContent = totalXP.toLocaleString();
 
-    renderXpOverTime(user.transactions || []);
+    renderTotalXpPoints(user.transactions || []);
     renderXpPerMonth(user.transactions || []);
     renderAuditRatio(user.auditRatio || 0);
 
@@ -135,7 +135,7 @@ async function fetchGraphQL(jwt, query) {
   return response.json();
 }
 
-function renderXpOverTime(transactions) {
+function renderTotalXpPoints(transactions) {
   const svg = d3.select('#xp-over-time');
   svg.selectAll('*').remove();
   const width = 700, height = 450, padding = 70;
@@ -150,51 +150,52 @@ function renderXpOverTime(transactions) {
     return;
   }
 
+  // Sort transactions by date and calculate cumulative XP
+  const sortedTransactions = transactions.slice().sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
   let cumulativeXP = 0;
-  const sortedTransactions = transactions
-    .map(t => ({ date: new Date(t.createdAt), xp: (cumulativeXP += t.amount) }))
-    .sort((a, b) => a.date - b.date);
+  const data = sortedTransactions.map(t => {
+    cumulativeXP += t.amount;
+    return { date: new Date(t.createdAt), totalXp: cumulativeXP };
+  });
 
   const xScale = d3.scaleTime()
-    .domain(d3.extent(sortedTransactions, d => d.date))
+    .domain(d3.extent(data, d => d.date))
     .range([padding, width - padding]);
-
-  const yMax = d3.max(sortedTransactions, d => d.xp) || 1;
   const yScale = d3.scaleLinear()
-    .domain([0, yMax * 1.1])
+    .domain([0, d3.max(data, d => d.totalXp) * 1.1])
     .range([height - padding, padding]);
 
-  svg.append('path')
-    .datum(sortedTransactions)
-    .attr('class', 'graph-line')
-    .attr('d', d3.line()
-      .x(d => xScale(d.date))
-      .y(d => yScale(d.xp))
-      .curve(d3.curveLinear)
-    );
+  // Add grid lines for clarity
+  svg.append('g')
+    .attr('class', 'graph-grid')
+    .attr('transform', `translate(0, ${height - padding})`)
+    .call(d3.axisBottom(xScale).ticks(10).tickSize(-height + 2 * padding).tickFormat(''));
+  svg.append('g')
+    .attr('class', 'graph-grid')
+    .attr('transform', `translate(${padding}, 0)`)
+    .call(d3.axisLeft(yScale).ticks(5).tickSize(-width + 2 * padding).tickFormat(''));
 
+  // Plot points
   svg.selectAll('.graph-point')
-    .data(sortedTransactions)
+    .data(data)
     .enter()
     .append('circle')
     .attr('class', 'graph-point')
     .attr('cx', d => xScale(d.date))
-    .attr('cy', d => yScale(d.xp))
-    .attr('r', 5)
-    .on('mouseover', function (event, d) {
+    .attr('cy', d => yScale(d.totalXp))
+    .attr('r', 6)
+    .on('mouseover', function(event, d) {
       const tooltip = document.createElement('div');
       tooltip.className = 'tooltip';
-      tooltip.textContent = `${d.date.toLocaleDateString()}: ${d.xp.toLocaleString()} XP`;
+      tooltip.textContent = `${d.date.toLocaleDateString()}: ${d.totalXp.toLocaleString()} XP`;
       document.body.appendChild(tooltip);
-
-      setTimeout(() => {
-        const rect = this.getBoundingClientRect();
-        tooltip.style.left = `${rect.left + window.scrollX + rect.width / 2}px`;
-        tooltip.style.top = `${rect.top + window.scrollY - tooltip.offsetHeight - 10}px`;
-      }, 0);
+      const rect = this.getBoundingClientRect();
+      tooltip.style.left = `${rect.left + window.scrollX + rect.width / 2}px`;
+      tooltip.style.top = `${rect.top + window.scrollY - tooltip.offsetHeight - 10}px`;
     })
     .on('mouseout', () => document.querySelector('.tooltip')?.remove());
 
+  // Axes
   svg.append('g')
     .attr('class', 'graph-axis')
     .attr('transform', `translate(0, ${height - padding})`)
