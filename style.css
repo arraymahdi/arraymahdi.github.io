@@ -1,287 +1,119 @@
-/* Import futuristic font */
-@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Roboto+Mono:wght@300;400&display=swap');
-
-/* Global Styles */
 body {
-  background: linear-gradient(135deg, #0d001a 0%, #1a0033 50%, #000d1a 100%);
-  color: #e0e0ff;
-  font-family: 'Roboto Mono', monospace;
+  background: #1a1a1a;
+  color: #fff;
+  font-family: Arial, sans-serif;
   display: flex;
   justify-content: center;
   align-items: center;
   min-height: 100vh;
   margin: 0;
-  overflow-y: auto;
-  position: relative;
-  background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1000"><circle cx="50" cy="50" r="2" fill="rgba(255,0,255,0.3)"/><circle cx="950" cy="150" r="1" fill="rgba(0,255,255,0.2)"/><circle cx="500" cy="850" r="3" fill="rgba(255,255,0,0.4)"/></svg>');
-  background-size: 200px;
-  animation: pulse-bg 15s infinite;
 }
 
-@keyframes pulse-bg {
-  0%, 100% { opacity: 0.8; }
-  50% { opacity: 0.9; }
-}
-
-/* Login Section */
-#login-section {
-  background: rgba(20, 0, 40, 0.85);
-  padding: 50px;
-  border: 2px solid #ff00ff;
-  box-shadow: 0 0 30px rgba(255, 0, 255, 0.6), inset 0 0 10px rgba(0, 255, 255, 0.3);
-  border-radius: 20px;
+#login-section, #profile-section {
+  background: #2a2a2a;
+  padding: 30px;
+  border-radius: 10px;
+  box-shadow: 0 0 20px rgba(0, 255, 255, 0.2);
   width: 400px;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  max-width: 90%;
 }
 
-#login-section:hover {
-  transform: scale(1.05);
-  box-shadow: 0 0 40px rgba(255, 0, 255, 0.8);
-}
-
-#login-section h2 {
-  text-align: center;
+h2 {
   color: #00ffff;
-  font-family: 'Orbitron', sans-serif;
-  font-size: 32px;
-  letter-spacing: 3px;
-  text-transform: uppercase;
-  margin-bottom: 30px;
-  text-shadow: 0 0 15px rgba(0, 255, 255, 0.8);
+  text-align: center;
+  margin-bottom: 20px;
 }
 
-/* Form Styling */
 #login-form label {
   display: block;
-  margin-top: 20px;
-  color: #e0e0ff;
-  font-size: 16px;
-  text-shadow: 0 0 5px rgba(255, 255, 255, 0.2);
+  margin: 10px 0 5px;
+  color: #ccc;
 }
 
 #login-form input {
   width: 100%;
-  padding: 12px;
-  margin-top: 8px;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid #ff00ff;
-  border-radius: 8px;
-  color: #00ffff;
-  font-family: 'Roboto Mono', monospace;
-  box-shadow: 0 0 10px rgba(255, 0, 255, 0.3);
-  transition: border-color 0.3s, box-shadow 0.3s;
-}
-
-#login-form input:focus {
-  border-color: #00ffff;
-  box-shadow: 0 0 15px rgba(0, 255, 255, 0.6);
-  outline: none;
+  padding: 10px;
+  margin-bottom: 15px;
+  background: #333;
+  border: 1px solid #00ffff;
+  border-radius: 5px;
+  color: #fff;
 }
 
 #login-form button {
   width: 100%;
-  padding: 15px;
-  margin-top: 35px;
-  background: linear-gradient(45deg, #ff00ff, #00ffff);
-  color: #1a001a;
+  padding: 10px;
+  background: #00ffff;
   border: none;
-  border-radius: 8px;
-  font-family: 'Orbitron', sans-serif;
-  font-size: 16px;
-  text-transform: uppercase;
+  border-radius: 5px;
+  color: #1a1a1a;
   cursor: pointer;
-  box-shadow: 0 0 20px rgba(255, 0, 255, 0.5);
-  transition: background 0.3s, box-shadow 0.3s;
 }
 
 #login-form button:hover {
-  background: linear-gradient(45deg, #00ffff, #ff00ff);
-  box-shadow: 0 0 30px rgba(0, 255, 255, 0.8);
+  background: #00cccc;
 }
 
 #error-message {
-  text-align: center;
-  margin-top: 20px;
   color: #ff6666;
-  font-size: 14px;
-  background: rgba(255, 102, 102, 0.1);
-  padding: 10px;
-  border-radius: 5px;
-  box-shadow: 0 0 10px rgba(255, 102, 102, 0.3);
-}
-
-/* Profile Section */
-#profile-section {
-  background: rgba(20, 0, 40, 0.9);
-  padding: 50px;
-  border: 2px solid #00ffff;
-  box-shadow: 0 0 40px rgba(0, 255, 255, 0.6), inset 0 0 15px rgba(255, 0, 255, 0.2);
-  border-radius: 20px;
-  width: 95%;
-  max-width: 1200px;
-  min-height: 90vh;
-  margin: 20px 0;
-}
-
-#profile-section h2 {
-  color: #ff00ff;
-  font-family: 'Orbitron', sans-serif;
-  font-size: 36px;
   text-align: center;
-  text-shadow: 0 0 20px rgba(255, 0, 255, 0.8);
+  margin-top: 10px;
 }
 
 #logout-button {
-  background: linear-gradient(45deg, #ff6666, #ff00ff);
-  color: #e0e0ff;
+  background: #ff6666;
   border: none;
-  padding: 15px 35px;
-  font-family: 'Orbitron', sans-serif;
-  font-size: 16px;
-  text-transform: uppercase;
+  padding: 10px 20px;
+  border-radius: 5px;
+  color: #fff;
   cursor: pointer;
   float: right;
-  border-radius: 8px;
-  box-shadow: 0 0 20px rgba(255, 102, 102, 0.5);
-  transition: background 0.3s, box-shadow 0.3s;
 }
 
 #logout-button:hover {
-  background: linear-gradient(45deg, #ff00ff, #ff6666);
-  box-shadow: 0 0 30px rgba(255, 0, 255, 0.8);
-}
-
-marquee {
-  color: #ffff00;
-  font-family: 'Roboto Mono', monospace;
-  font-size: 18px;
-  margin: 20px 0;
-  text-shadow: 0 0 10px rgba(255, 255, 0, 0.6);
+  background: #ff3333;
 }
 
 #user-info p {
-  margin: 15px 0;
-  padding: 15px;
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid #00ffff;
-  border-radius: 8px;
-  box-shadow: 0 0 15px rgba(0, 255, 255, 0.3);
-  transition: background 0.3s;
+  margin: 10px 0;
+  padding: 10px;
+  background: #333;
+  border-radius: 5px;
 }
 
-#user-info p:hover {
-  background: rgba(255, 255, 255, 0.06);
-}
-
-#user-info strong {
-  color: #ff00ff;
-  text-shadow: 0 0 5px rgba(255, 0, 255, 0.5);
-}
-
-/* Graphs Section */
 #graphs {
-  margin-top: 50px;
-  padding: 30px;
-  background: rgba(255, 255, 255, 0.02);
-  border-radius: 15px;
-  box-shadow: 0 0 20px rgba(255, 0, 255, 0.4);
+  margin-top: 20px;
 }
 
 .graph-container {
-  margin-bottom: 40px;
-  padding: 20px;
-  background: rgba(20, 0, 40, 0.95);
-  border: 1px solid #ff00ff;
-  border-radius: 10px;
-  box-shadow: 0 0 25px rgba(255, 0, 255, 0.5);
-  overflow-x: auto; /* For XP Per Month scrolling */
+  margin-bottom: 20px;
 }
 
 .graph-container h3 {
   color: #00ffff;
-  font-family: 'Orbitron', sans-serif;
-  font-size: 24px;
   text-align: center;
-  text-transform: uppercase;
-  letter-spacing: 2px;
-  margin-bottom: 20px;
-  text-shadow: 0 0 15px rgba(0, 255, 255, 0.7);
-}
-
-.grid line {
-  stroke: rgba(255, 0, 255, 0.2);
-  stroke-width: 1;
 }
 
 .graph-line {
-  stroke: #ff00ff;
-  stroke-width: 3;
-  filter: drop-shadow(0 0 10px rgba(255, 0, 255, 0.7));
+  stroke: #00ffff;
+  stroke-width: 2;
 }
 
 .graph-bar {
   fill: #00ffff;
-  filter: drop-shadow(0 0 8px rgba(0, 255, 255, 0.6));
-}
-
-.graph-bar:hover {
-  transform: scale(1.05);
-}
-
-.graph-point {
-  fill: #ffff00;
-  filter: drop-shadow(0 0 6px rgba(255, 255, 0, 0.7));
-}
-
-.graph-point:hover {
-  r: 7;
-}
-
-.graph-axis {
-  stroke: #e0e0ff;
-  stroke-width: 1;
-  opacity: 0.8;
 }
 
 .graph-axis text {
-  fill: #ff00ff;
-  font-family: 'Roboto Mono', monospace;
+  fill: #ccc;
   font-size: 12px;
-  text-shadow: 0 0 5px rgba(255, 0, 255, 0.5);
 }
 
-.graph-label {
-  fill: #ffff00;
-  font-family: 'Roboto Mono', monospace;
-  font-size: 14px;
-  text-shadow: 0 0 6px rgba(255, 255, 0, 0.6);
-}
-
-/* Tooltip */
 .tooltip {
   position: absolute;
-  background: rgba(20, 0, 40, 0.9);
-  color: #ffff00;
-  padding: 10px 15px;
-  border-radius: 8px;
+  background: #333;
+  color: #fff;
+  padding: 5px 10px;
+  border-radius: 5px;
   border: 1px solid #00ffff;
-  font-family: 'Roboto Mono', monospace;
-  font-size: 14px;
-  box-shadow: 0 0 15px rgba(0, 255, 255, 0.5);
-  pointer-events: none;
-}
-
-/* Responsive Design */
-@media (max-width: 768px) {
-  #login-section, #profile-section {
-    width: 90%;
-    padding: 30px;
-  }
-  .graph-container {
-    max-width: 100%;
-  }
-  .graph-container svg {
-    width: 100%;
-    height: 400px;
-  }
+  font-size: 12px;
 }
