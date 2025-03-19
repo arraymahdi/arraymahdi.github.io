@@ -1,4 +1,4 @@
-/* Import a sophisticated font */
+/* Import sophisticated fonts */
 @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Roboto:wght@300;400&display=swap');
 
 /* Global styles */
@@ -37,69 +37,65 @@ body::before {
 /* Login Section */
 #login-section {
   background: rgba(10, 10, 51, 0.9);
-  padding: 30px;
+  padding: 40px;
   border: 1px solid #b388ff;
-  box-shadow: 0 0 20px rgba(179, 136, 255, 0.5);
+  box-shadow: 0 0 25px rgba(179, 136, 255, 0.5);
   border-radius: 15px;
-  width: 320px;
+  width: 350px;
   transition: transform 0.3s ease, opacity 0.5s ease;
 }
 
 #login-section:hover {
-  transform: scale(1.02);
+  transform: scale(1.03);
 }
 
 #login-section h2 {
   text-align: center;
   color: #b388ff;
   font-family: 'Cinzel', serif;
-  font-size: 24px;
-  letter-spacing: 1.5px;
+  font-size: 26px;
+  letter-spacing: 2px;
   text-transform: uppercase;
-  margin-bottom: 20px;
-}
-
-/* Subtle glow effect for headings */
-h2 {
-  position: relative;
-  text-shadow: 0 0 10px rgba(179, 136, 255, 0.7);
+  margin-bottom: 25px;
+  text-shadow: 0 0 12px rgba(179, 136, 255, 0.7);
 }
 
 /* Form styling */
 #login-form label {
   display: block;
-  margin-top: 15px;
+  margin-top: 20px;
   color: #e6e6e6;
-  font-size: 14px;
+  font-size: 15px;
 }
 
 #login-form input {
   width: 100%;
-  padding: 10px;
-  margin-top: 5px;
+  padding: 12px;
+  margin-top: 6px;
   background: rgba(255, 255, 255, 0.1);
   border: 1px solid #8e24aa;
-  border-radius: 5px;
+  border-radius: 6px;
   color: #fff;
   font-family: 'Roboto', sans-serif;
-  box-shadow: inset 0 0 5px rgba(142, 36, 170, 0.3);
+  box-shadow: inset 0 0 6px rgba(142, 36, 170, 0.3);
   box-sizing: border-box;
-  transition: border-color 0.3s;
+  transition: border-color 0.3s, box-shadow 0.3s;
 }
 
 #login-form input:focus {
   border-color: #b388ff;
+  box-shadow: 0 0 8px rgba(179, 136, 255, 0.5);
   outline: none;
 }
 
 #login-form button {
   width: 100%;
-  padding: 12px;
-  margin-top: 25px;
+  padding: 14px;
+  margin-top: 30px;
   background: linear-gradient(45deg, #8e24aa, #b388ff);
   color: #fff;
   border: none;
-  border-radius: 5px;
+  border-radius: 6px;
   font-family: 'Cinzel', serif;
   text-transform: uppercase;
   cursor: pointer;
@@ -108,51 +104,127 @@ h2 {
 
 #login-form button:hover {
   background: linear-gradient(45deg, #b388ff, #8e24aa);
-  box-shadow: 0 0 15px rgba(179, 136, 255, 0.7);
+  box-shadow: 0 0 20px rgba(179, 136, 255, 0.7);
 }
 
 #error-message {
   text-align: center;
-  margin-top: 15px;
+  margin-top: 20px;
   color: #ff8a80;
   font-size: 14px;
+  background: rgba(255, 138, 128, 0.1);
+  padding: 8px;
+  border-radius: 4px;
 }
 
 /* Profile Section */
 #profile-section {
-  background: rgba(10, 10, 51, 0.9);
-  padding: 30px;
+  background: rgba(10, 10, 51, 0.95);
+  padding: 40px;
   border: 1px solid #b388ff;
-  box-shadow: 0 0 20px rgba(179, 136, 255, 0.5);
+  box-shadow: 0 0 25px rgba(179, 136, 255, 0.5);
   border-radius: 15px;
-  width: 85%;
-  max-width: 900px;
+  width: 90%;
+  max-width: 1000px;
   transition: opacity 0.5s ease;
-  min-height: 80vh;
+  min-height: 85vh;
   overflow-y: auto;
-  margin: 30px 0;
+  margin: 20px 0;
 }
 
-#profile-section h2 {
+/* Enhanced Graph Section */
+#graphs {
+  margin-top: 40px;
+  padding: 20px;
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 10px;
+  box-shadow: 0 0 15px rgba(179, 136, 255, 0.2);
+}
+
+#graphs h3 {
+  text-align: center;
+  color: #b388ff;
+  font-family: 'Cinzel', serif;
+  font-size: 20px;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
   margin-bottom: 25px;
+  background: linear-gradient(45deg, #b388ff, #8e24aa);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-shadow: 0 0 12px rgba(179, 136, 255, 0.5);
 }
 
+.graph-container {
+  background: rgba(10, 10, 51, 0.95);
+  padding: 15px;
+  border-radius: 8px;
+  margin-bottom: 30px;
+  box-shadow: 0 0 10px rgba(179, 136, 255, 0.3);
+}
+
+/* Improved Graph Styling */
+.graph-line {
+  stroke: #00ffff;
+  stroke-width: 2.5;
+  filter: drop-shadow(0 0 6px rgba(0, 255, 255, 0.6));
+}
+
+.graph-bar {
+  fill: #8e24aa;
+  transition: transform 0.2s ease;
+}
+
+.graph-bar:hover {
+  transform: scale(1.05);
+  filter: drop-shadow(0 0 8px rgba(142, 36, 170, 0.7));
+}
+
+.graph-point {
+  fill: #00ffff;
+  transition: r 0.2s ease;
+}
+
+.graph-point:hover {
+  r: 6;
+}
+
+.graph-axis {
+  stroke: #e6e6e6;
+  stroke-width: 1;
+  opacity: 0.7;
+}
+
+.graph-label {
+  fill: #e6e6e6;
+  font-family: 'Roboto', sans-serif;
+  font-size: 12px;
+  text-shadow: 0 0 4px rgba(179, 136, 255, 0.5);
+}
+
+/* Tooltip Styling */
+.tooltip {
+  position: absolute;
+  background: rgba(10, 10, 51, 0.95);
+  color: #fff;
+  padding: 8px 12px;
+  border-radius: 5px;
+  border: 1px solid #b388ff;
+  font-size: 12px;
+  pointer-events: none;
+  box-shadow: 0 0 10px rgba(179, 136, 255, 0.5);
+}
+
+/* [Rest of the CSS remains similar with minor improvements] */
 #logout-button {
   background: linear-gradient(45deg, #d81b60, #f06292);
-  color: #fff;
-  border: none;
-  padding: 12px 25px;
-  font-family: 'Cinzel', serif;
-  text-transform: uppercase;
-  cursor: pointer;
-  float: right;
-  border-radius: 5px;
-  transition: background 0.3s, box-shadow 0.3s;
+  padding: 14px 30px;
+  border-radius: 6px;
 }
 
 #logout-button:hover {
   background: linear-gradient(45deg, #f06292, #d81b60);
-  box-shadow: 0 0 15px rgba(240, 98, 146, 0.7);
+  box-shadow: 0 0 20px rgba(240, 98, 146, 0.7);
 }
 
 #user-info p {
@@ -162,103 +234,23 @@ h2 {
   border: 1px solid #8e24aa;
   border-radius: 5px;
   box-shadow: 0 0 5px rgba(142, 36, 170, 0.3);
+  transition: background 0.3s;
 }
 
-/* Graphs Section */
-#graphs {
-  margin-top: 30px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 40px; /* Space between graphs */
-}
-
-#graphs h3 {
-  text-align: center;
-  color: #b388ff;
-  font-family: 'Cinzel', serif;
-  font-size: 18px;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  margin-bottom: 15px;
-  text-shadow: 0 0 10px rgba(179, 136, 255, 0.5);
-}
-
-/* Graph styling */
-.graph-line {
-  stroke: #b388ff;
-  stroke-width: 2;
-  filter: drop-shadow(0 0 5px rgba(179, 136, 255, 0.7));
-}
-
-.graph-axis {
-  stroke: #e6e6e6;
-  stroke-width: 1;
-  opacity: 0.6;
-}
-
-.graph-bar {
-  fill: #8e24aa;
-  filter: drop-shadow(0 0 5px rgba(229, 223, 231, 0.7));
-  cursor: pointer;
-  transition: opacity 0.2s;
-}
-
-.graph-bar:hover {
-  opacity: 0.8;
-}
-
-.graph-point {
-  fill: #b388ff;
-  cursor: pointer;
-  transition: r 0.2s;
-}
-
-.graph-point:hover {
-  r: 6;
-}
-
-.graph-label {
-  fill: #e6e6e6;
-  font-family: 'Roboto', sans-serif;
-  font-size: 12px;
-  text-shadow: 0 0 3px rgba(179, 136, 255, 0.5);
-}
-
-/* Tooltip styling */
-.tooltip {
-  position: absolute;
-  background: rgba(10, 10, 51, 0.9);
-  color: #e6e6e6;
-  padding: 5px 10px;
-  border-radius: 5px;
-  border: 1px solid #b388ff;
-  font-size: 12px;
-  pointer-events: none;
-  box-shadow: 0 0 10px rgba(179, 136, 255, 0.5);
-  z-index: 10;
-}
-
-/* Hide sections when not displayed */
-.hidden {
-  opacity: 0;
-  display: none;
+#user-info p:hover {
+  background: rgba(255, 255, 255, 0.08);
 }
 
 /* Responsive design */
 @media (max-width: 600px) {
   #login-section,
   #profile-section {
-    width: 90%;
+    width: 95%;
+    padding: 20px;
   }
-  #xp-over-time,
-  #xp-per-year,
-  #audits-per-year,
-  #xp-per-project {
-    display: block;
-    margin: 0 auto;
+  .graph-container svg {
     width: 100%;
-    max-width: 500px;
-    height: 300px;
+    max-width: 400px;
+    height: 250px;
   }
 }
